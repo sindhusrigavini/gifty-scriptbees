@@ -5,7 +5,6 @@ const closeBtn = document.getElementById("close-btn");
 const chatbot = document.getElementById("chatbot");
 const toggleBtn = document.getElementById("chat-toggle");
 
-const BACKEND_URL = "http://localhost:5678/webhook/gifty";
 let hasSuggested = false;
 
 sendBtn.addEventListener("click", sendMessage);
@@ -36,7 +35,7 @@ function addBotMessage(html) {
   chatBox.scrollTop = chatBox.scrollHeight;
 }
 
-async function sendMessage() {
+function sendMessage() {
   const userMessage = input.value.trim();
   if (!userMessage) return;
   addUserMessage(userMessage);
@@ -48,33 +47,27 @@ async function sendMessage() {
   chatBox.appendChild(thinking);
   chatBox.scrollTop = chatBox.scrollHeight;
 
-  try {
-    const res = await fetch(BACKEND_URL, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ message: userMessage }),
-    });
-    const data = await res.json();
+  setTimeout(() => {
     thinking.remove();
-    addBotMessage(data.reply || data.message || "🤖 No response received.");
+    handleUserMessage(userMessage);
+  }, 600);
+}
 
-    const lower = userMessage.toLowerCase();
-    const giftWords = ["birthday", "anniversary", "valentine", "farewell", "annual", "gift", "occasion", "event", "present", "party"];
-    const isGift = giftWords.some(w => lower.includes(w));
+function handleUserMessage(userMessage) {
+  const lower = userMessage.toLowerCase();
+  const giftWords = ["birthday", "anniversary", "valentine", "farewell", "annual", "gift", "occasion", "event", "present", "party"];
+  const isGift = giftWords.some(w => lower.includes(w));
 
-    if (isGift) {
-      if (!hasSuggested) {
-        addBotMessage("Got it! Let me find some great gift ideas for that 💡");
-        setTimeout(showButtons, 600);
-        hasSuggested = true;
-      } else {
-        showGiftSuggestions(userMessage);
-      }
+  if (isGift) {
+    if (!hasSuggested) {
+      addBotMessage("Got it! Let me find some great gift ideas for that 💡");
+      setTimeout(showButtons, 600);
+      hasSuggested = true;
+    } else {
+      showGiftSuggestions(userMessage);
     }
-  } catch (err) {
-    thinking.remove();
-    addBotMessage("⚠️ Error: Could not reach Gifty backend.");
-    console.error(err);
+  } else {
+    addBotMessage("😊 Tell me about an occasion or event — I’ll suggest perfect gifts!");
   }
 }
 
@@ -165,3 +158,4 @@ window.addEventListener("load", () => {
   `);
   toggleBtn.style.display = "none";
 });
+
