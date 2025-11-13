@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Gifty – Smart Gifting Made Simple</title>
-  <link rel="stylesheet" href="style.css?v=2" />
+  <link rel="stylesheet" href="style.css?v=4" />
 </head>
 <body>
   <!-- 🔹 Navigation Bar -->
@@ -34,13 +34,16 @@
   <div id="chatbot" class="chatbot">
     <div class="chat-header">
       <span>AI Assistant</span>
-      <button id="close-btn">✕</button>
+      <div class="chat-controls">
+        <button id="refresh-btn" title="Refresh Chat">⟳</button>
+        <button id="close-btn" title="Close">✕</button>
+      </div>
     </div>
 
     <div id="chat-box" class="chat-box"></div>
 
     <div class="chat-input">
-      <input type="text" id="user-input" placeholder="Ask for help..." />
+      <input type="text" id="user-input" placeholder="Ask something..." />
       <button id="send-btn">➤</button>
     </div>
 
@@ -50,13 +53,7 @@
   <!-- 💡 Reopen Icon -->
   <div id="chat-toggle" class="chat-toggle">💡</div>
 
-  <!-- ✅ Updated JS Include -->
-  <script src="script.js?v=2" defer></script>
+  <!-- ✅ Script -->
+  <script src="script.js?v=4" defer></script>
 </body>
 </html>
-
-
-  <script src="script.js"></script>
-</body>
-</html>
-
