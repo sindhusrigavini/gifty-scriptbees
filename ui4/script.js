@@ -2,43 +2,57 @@ const chatBox = document.getElementById("chat-box");
 const input = document.getElementById("user-input");
 const sendBtn = document.getElementById("send-btn");
 const closeBtn = document.getElementById("close-btn");
+const refreshBtn = document.getElementById("refresh-btn");
 const chatbot = document.getElementById("chatbot");
 const toggleBtn = document.getElementById("chat-toggle");
 
 let hasSuggested = false;
 
-// 🧹 Completely clear any stored or injected messages
+// ✅ Embed your CSV Q&A data (simplified)
+const qaData = [
+  { q: "what is gifty", a: "Gifty is an AI-powered assistant that helps you find perfect gifts for any occasion 🎁." },
+  { q: "who created you", a: "I was created by the ScriptBees team to make gifting smarter and easier! 💡" },
+  { q: "how to use gifty", a: "Simply tell me the occasion or person, and I’ll suggest thoughtful gifts instantly." },
+  { q: "what can you do", a: "I can suggest personalized gifts, share product links, and help you explore gift ideas for birthdays, anniversaries, farewells, and more!" },
+  { q: "hi", a: "Hello! 👋 I’m Gifty — your personal gifting assistant. What are you celebrating today?" },
+  { q: "hello", a: "Hi there! 🌟 Tell me your occasion and I’ll find some amazing gift options for you!" },
+  // 👉 You can add more Q&A pairs from your CSV here manually
+];
+
+// 🧹 On page load — reset chat
 window.addEventListener("load", () => {
-  try {
-    localStorage.clear();
-    sessionStorage.clear();
-  } catch (e) {}
-
-  chatBox.innerHTML = ""; // remove all old HTML nodes
-
-  // Add welcome message
-  addBotMessage(`
-    <strong>I am Gifty AI 😊</strong><br>
-    I can recommend amazing gift ideas for any occasion — just ask me about an event or celebration!
-  `);
-
+  resetChat();
   toggleBtn.style.display = "none";
 });
 
+// Events
 sendBtn.addEventListener("click", sendMessage);
 input.addEventListener("keypress", (e) => {
   if (e.key === "Enter") sendMessage();
 });
-
 closeBtn.addEventListener("click", () => {
   chatbot.style.display = "none";
   toggleBtn.style.display = "flex";
 });
-
 toggleBtn.addEventListener("click", () => {
   chatbot.style.display = "flex";
   toggleBtn.style.display = "none";
 });
+refreshBtn.addEventListener("click", resetChat);
+
+// 💬 Reset Chat
+function resetChat() {
+  chatBox.innerHTML = "";
+  hasSuggested = false;
+  try {
+    localStorage.clear();
+    sessionStorage.clear();
+  } catch (e) {}
+  addBotMessage(`
+    <strong>I am Gifty AI 😊</strong><br>
+    I can recommend amazing gift ideas for any occasion — just ask me about an event or celebration!
+  `);
+}
 
 function addUserMessage(text) {
   const msg = document.createElement("div");
@@ -74,46 +88,35 @@ function sendMessage() {
   }, 600);
 }
 
+// 🧠 Handle user input
 function handleUserMessage(userMessage) {
-  const lower = userMessage.toLowerCase();
-  const giftWords = [
-    "birthday",
-    "anniversary",
-    "valentine",
-    "farewell",
-    "annual",
-    "gift",
-    "occasion",
-    "event",
-    "present",
-    "party",
-  ];
+  const lower = userMessage.toLowerCase().trim();
+
+  // 1️⃣ Check direct Q&A matches
+  const qaMatch = qaData.find((pair) => lower.includes(pair.q));
+  if (qaMatch) {
+    addBotMessage(qaMatch.a);
+    return;
+  }
+
+  // 2️⃣ Gift suggestion detection
+  const giftWords = ["birthday", "anniversary", "valentine", "farewell", "annual", "gift", "occasion", "event", "present", "party"];
   const isGift = giftWords.some((w) => lower.includes(w));
 
-if (isGift) {
-  if (!hasSuggested) {
-    addBotMessage("Got it! Let me find some great gift ideas for that 💡");
-    setTimeout(showButtons, 600);
-    hasSuggested = true;
+  if (isGift) {
+    if (!hasSuggested) {
+      addBotMessage("Got it! Let me find some great gift ideas for that 💡");
+      setTimeout(showButtons, 600);
+      hasSuggested = true;
+    } else {
+      showGiftSuggestions(userMessage);
+    }
   } else {
-    showGiftSuggestions(userMessage);
+    addBotMessage("Tell me what you’re celebrating, and I’ll help you find the perfect present! 💡");
   }
-} else if (
-  /^(hi|hello|hey|how are you|hola|yo|good morning|good afternoon|good evening|what's up|sup|howdy|hi there|hey there|how’s it going|how r u|hru|good day)\b/i.test(userMessage)
-) {
-  const greetings = [
-    "Hey there! 🎉 What are you celebrating today? Let’s find the perfect gift! 💝",
-    "Hi! 😊 It’s great to see you — are you celebrating something special?",
-    "Hello! 🌟 Ready to explore some awesome gift ideas?",
-    "Hey! 💫 Tell me what you’re celebrating, and I’ll find something thoughtful!",
-  ];
-  const randomGreeting = greetings[Math.floor(Math.random() * greetings.length)];
-  addBotMessage(randomGreeting);
-} else {
-  addBotMessage("Tell me what you’re celebrating, and I’ll help you find the perfect present! 💡");
-}
 }
 
+// 🔘 Occasion Buttons
 function showButtons() {
   chatBox.insertAdjacentHTML(
     "beforeend",
@@ -135,6 +138,7 @@ function selectOccasion(occasion) {
   showGiftSuggestions(occasion);
 }
 
+// 🎁 Gift Suggestions
 function showGiftSuggestions(text) {
   const lower = text.toLowerCase();
   let occasion = "Gift Ideas";
@@ -185,19 +189,8 @@ function showGiftSuggestions(text) {
   const html = `
     Here are some great <b>${occasion}</b> ideas 🎁:
     <ul>
-      ${links.map((l) => `<li><a href="${l.url}" target="_blank">${l.label}</a></li>`).join("")}
+      ${links.map(l => `<li><a href="${l.url}" target="_blank">${l.label}</a></li>`).join("")}
     </ul>`;
   addBotMessage(html);
-  // 🧹 Hard reset on every page load
-window.addEventListener("DOMContentLoaded", () => {
-  try {
-    localStorage.clear();
-    sessionStorage.clear();
-    document.getElementById("chat-box").innerHTML = "";
-  } catch (e) {
-    console.error("Cleanup failed:", e);
-  }
-});
-
 }
 
