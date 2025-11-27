@@ -11,7 +11,7 @@ let hasSuggested = false;
 // ✅ Embed your CSV Q&A data (simplified)
 const qaData = [
   { q: "what is gifty", a: "Gifty is an AI-powered assistant that helps you find perfect gifts for any occasion 🎁." },
-  { q: "who created you", a: "I was created by the ScriptBees team to make gifting smarter and easier! 💡" },
+  { q: "who created you", a: "I was created by Sindhu Sri Gavini of the Gifty team! 💡" },
   { q: "how to use gifty", a: "Simply tell me the occasion or person, and I’ll suggest thoughtful gifts instantly." },
   { q: "what can you do", a: "I can suggest personalized gifts, share product links, and help you explore gift ideas for birthdays, anniversaries, farewells, and more!" },
   { q: "hi", a: "Hello! 👋 I’m Gifty — your personal gifting assistant. What are you celebrating today?" },
@@ -193,4 +193,5 @@ function showGiftSuggestions(text) {
     </ul>`;
   addBotMessage(html);
 }
+
 
